@@ -1,4 +1,4 @@
-import 'package:emotion_music_app/ui/screens/music_player_screen.dart';
+import 'package:emotion_music_app/ui/screens/main_bottom_nav_bar_screen.dart';
 import 'package:flutter/material.dart';
 
 class EmotionDetecterPlaylistApp extends StatelessWidget {
@@ -10,8 +10,8 @@ class EmotionDetecterPlaylistApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
 
       title: "Emotion Playlist App",
-      // home: const EmotionDetectionHomeScreen(),
-      home: MusicPlayerScreen(),
+      home: const MainBottomNavBarScreen(),
+      // home: MusicPlayerScreen(),
     );
   }
 }

@@ -1,3 +1,4 @@
+import 'package:emotion_music_app/ui/widgets/mood_detection_button.dart';
 import 'package:flutter/material.dart';
 
 class EmotionDetectionHomeScreen extends StatelessWidget {
@@ -13,50 +14,95 @@ class EmotionDetectionHomeScreen extends StatelessWidget {
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
 
       body: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Container(
-            height: 250,
-            width: double.infinity,
-            color: Colors.grey[900],
+          const SizedBox(height: 20),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 20),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                MoodDetectionButton(
+                  icon: Icons.camera_alt,
+                  label: 'Face Detection',
+                  onTap: () {},
+                ),
 
-            child: Center(
-              child: Icon(Icons.camera, size: 50, color: Colors.white),
+                MoodDetectionButton(
+                  icon: Icons.mic,
+                  label: 'Speech Detection',
+                  onTap: () {},
+                ),
+              ],
             ),
           ),
+
+          const SizedBox(height: 30),
+
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 20),
+            child: Text(
+              "Suggested Playlists",
+
+              style: TextStyle(
+                color: Colors.white,
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+
+          const SizedBox(height: 10),
+
           Expanded(
             child: ListView.builder(
               itemCount: 5,
+              padding: const EdgeInsets.symmetric(horizontal: 20),
               itemBuilder: (context, index) {
-                return Card(
-                  color: Colors.grey[800],
-                  child: ListTile(
-                    leading: Icon(Icons.music_note, color: Colors.white),
-                    title: Text(
-                      "Happy Vibes Playlist",
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                );
+                return _buildPlaylistCard(index);
               },
             ),
           ),
         ],
       ),
-      bottomNavigationBar: BottomNavigationBar(
-        elevation: 10,
+    );
+  }
 
-        backgroundColor: Colors.black,
-        selectedItemColor: Colors.white,
-        unselectedItemColor: Colors.grey,
+  Widget _buildPlaylistCard(int index) {
+    final titles = [
+      "Happy Vibes",
+      "Relaxing Tunes",
+      "Energetic Beats",
+      "Chill Hits",
+      "Focus Mode",
+    ];
+    return Card(
+      color: Colors.grey[850],
 
-        items: [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-          BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "Music"),
-          BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
-        ],
+      margin: const EdgeInsets.symmetric(vertical: 10),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+
+      child: ListTile(
+        leading: const Icon(Icons.music_note, color: Colors.white),
+
+        title: Text(
+          titles[index],
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+
+        trailing: const Icon(
+          Icons.arrow_forward_ios,
+          color: Colors.white54,
+          size: 18,
+        ),
+        onTap: () {},
       ),
     );
   }
