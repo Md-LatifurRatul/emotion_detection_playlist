@@ -1,13 +1,62 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:emotion_music_app/controller/services/auth_exception.dart';
+import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/ui/screens/emotion_detection_home_screen.dart';
 import 'package:emotion_music_app/ui/widgets/custom_auth_button.dart';
 import 'package:emotion_music_app/ui/widgets/custom_text_field.dart';
+import 'package:emotion_music_app/ui/widgets/snack_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class LoginScreen extends StatelessWidget {
-  final VoidCallback onSignUpTap;
+class LoginScreen extends StatefulWidget {
+  final VoidCallback? onSignUpTap;
 
-  const LoginScreen({super.key, required this.onSignUpTap});
+  const LoginScreen({super.key, this.onSignUpTap});
+
+  @override
+  State<LoginScreen> createState() => _LoginScreenState();
+}
+
+class _LoginScreenState extends State<LoginScreen> {
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+  final _firebaseAuthService = FirebaseAuthService();
+
+  Future<void> _signInUser() async {
+    try {
+      final user = await _firebaseAuthService.signInWithEmailAndPassword(
+        _emailTEController.text.trim(),
+        _passwordTEController.text.trim(),
+      );
+      print(user);
+
+      if (mounted) {
+        SnackMessage.showSnakMessage(context, "Sign in success");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const EmotionDetectionHomeScreen(),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      print("Sign in error: ${e.message}");
+
+      if (mounted) {
+        SnackMessage.showSnakMessage(context, "Sign in failed: ${e.message} ");
+      }
+    } catch (e) {
+      print(e.toString());
+      if (!mounted) {
+        return;
+      }
+      SnackMessage.showSnakMessage(
+        context,
+        "Something happen: ${e.toString()} ",
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +78,7 @@ class LoginScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomTextField(
+                        textEditingController: _emailTEController,
                         icon: CupertinoIcons.mail,
                         hintText: "Email",
                         isPassword: false,
@@ -37,6 +87,7 @@ class LoginScreen extends StatelessWidget {
                       SizedBox(height: 20),
 
                       CustomTextField(
+                        textEditingController: _passwordTEController,
                         icon: CupertinoIcons.lock,
                         hintText: "Password",
 
@@ -52,7 +103,21 @@ class LoginScreen extends StatelessWidget {
                 FadeInUp(
                   duration: Duration(milliseconds: 600),
                   delay: Duration(milliseconds: 400),
-                  child: CustomAuthButton(onPressed: () {}, text: "Log In"),
+                  child: CustomAuthButton(
+                    onPressed: () {
+                      if (_emailTEController.text.isEmpty &&
+                          _passwordTEController.text.isEmpty) {
+                        SnackMessage.showSnakMessage(
+                          context,
+                          "Field Must not be empty",
+                        );
+                        return;
+                      }
+
+                      _signInUser();
+                    },
+                    text: "Log In",
+                  ),
                 ),
                 SizedBox(height: 24),
                 FadeIn(
@@ -69,7 +134,7 @@ class LoginScreen extends StatelessWidget {
                       ),
 
                       GestureDetector(
-                        onTap: onSignUpTap,
+                        onTap: widget.onSignUpTap,
 
                         child: Text(
                           "Sign Up",
@@ -237,5 +302,12 @@ class LoginScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }
