@@ -1,13 +1,64 @@
 import 'package:animate_do/animate_do.dart';
+import 'package:emotion_music_app/controller/services/auth_exception.dart';
+import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/ui/screens/auth/login_screen.dart';
 import 'package:emotion_music_app/ui/widgets/custom_auth_button.dart';
 import 'package:emotion_music_app/ui/widgets/custom_text_field.dart';
+import 'package:emotion_music_app/ui/widgets/snack_message.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-class SignUpScreen extends StatelessWidget {
+class SignUpScreen extends StatefulWidget {
   final VoidCallback onLoginTap;
 
   const SignUpScreen({super.key, required this.onLoginTap});
+
+  @override
+  State<SignUpScreen> createState() => _SignUpScreenState();
+}
+
+class _SignUpScreenState extends State<SignUpScreen> {
+  final TextEditingController _userNameTEController = TextEditingController();
+
+  final TextEditingController _emailTEController = TextEditingController();
+  final TextEditingController _passwordTEController = TextEditingController();
+  final _firebaseAuthService = FirebaseAuthService();
+
+  Future<void> _onSignUp() async {
+    try {
+      final user = await _firebaseAuthService.createUserWithEmailAndPassword(
+        _emailTEController.text.trim(),
+        _passwordTEController.text.trim(),
+      );
+
+      print(user);
+
+      await _firebaseAuthService.signOut();
+
+      if (mounted) {
+        SnackMessage.showSnakMessage(context, "Sign up success}");
+
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const LoginScreen()),
+        );
+      }
+    } on AuthException catch (e) {
+      print("Sign up error: ${e.message}");
+      if (!mounted) {
+        return;
+      }
+      SnackMessage.showSnakMessage(context, "Sign up failed: ${e.message}");
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+      SnackMessage.showSnakMessage(
+        context,
+        "Something went wrong: ${e.toString()}",
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -29,6 +80,7 @@ class SignUpScreen extends StatelessWidget {
                   child: Column(
                     children: [
                       CustomTextField(
+                        textEditingController: _userNameTEController,
                         icon: CupertinoIcons.person,
                         hintText: "Username",
                         isPassword: false,
@@ -36,6 +88,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
                       SizedBox(height: 16),
                       CustomTextField(
+                        textEditingController: _emailTEController,
                         icon: CupertinoIcons.mail,
                         hintText: "Email",
                         isPassword: false,
@@ -44,6 +97,7 @@ class SignUpScreen extends StatelessWidget {
                       SizedBox(height: 16),
 
                       CustomTextField(
+                        textEditingController: _passwordTEController,
                         icon: CupertinoIcons.lock,
                         hintText: "Password",
 
@@ -53,13 +107,14 @@ class SignUpScreen extends StatelessWidget {
 
                       SizedBox(height: 16),
 
-                      CustomTextField(
-                        icon: CupertinoIcons.lock,
-                        hintText: "Confirm Password",
+                      // CustomTextField(
+                      //   textEditingController: _confirmPasswordTEController,
+                      //   icon: CupertinoIcons.lock,
+                      //   hintText: "Confirm Password",
 
-                        isPassword: true,
-                        gradientColor: [Color(0xFF4A154B), Color(0xFF6B1A6B)],
-                      ),
+                      //   isPassword: true,
+                      //   gradientColor: [Color(0xFF4A154B), Color(0xFF6B1A6B)],
+                      // ),
                     ],
                   ),
                 ),
@@ -70,7 +125,19 @@ class SignUpScreen extends StatelessWidget {
                   duration: Duration(milliseconds: 600),
                   delay: Duration(milliseconds: 400),
                   child: CustomAuthButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      if (_userNameTEController.text.isEmpty &&
+                          _emailTEController.text.isEmpty &&
+                          _passwordTEController.text.isEmpty) {
+                        SnackMessage.showSnakMessage(
+                          context,
+                          "Field Must not be empty",
+                        );
+                        return;
+                      }
+
+                      _onSignUp();
+                    },
                     text: "Create Account",
                   ),
                 ),
@@ -89,7 +156,7 @@ class SignUpScreen extends StatelessWidget {
                       ),
 
                       GestureDetector(
-                        onTap: onLoginTap,
+                        onTap: widget.onLoginTap,
 
                         child: Text(
                           "Log In",
@@ -257,5 +324,13 @@ class SignUpScreen extends StatelessWidget {
         ],
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _userNameTEController.dispose();
+    _emailTEController.dispose();
+    _passwordTEController.dispose();
+    super.dispose();
   }
 }

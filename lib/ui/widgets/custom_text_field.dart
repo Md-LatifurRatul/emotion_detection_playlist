@@ -5,12 +5,14 @@ class CustomTextField extends StatelessWidget {
   final String hintText;
   final bool isPassword;
   final List<Color> gradientColor;
+  final TextEditingController textEditingController;
   const CustomTextField({
     super.key,
     required this.icon,
     required this.hintText,
     required this.isPassword,
     required this.gradientColor,
+    required this.textEditingController,
   });
 
   @override
@@ -29,6 +31,8 @@ class CustomTextField extends StatelessWidget {
       ),
       child: TextField(
         obscureText: isPassword,
+        controller: textEditingController,
+
         style: TextStyle(color: Color(0xFF1D1C1D)),
         decoration: InputDecoration(
           prefixIcon: ShaderMask(
