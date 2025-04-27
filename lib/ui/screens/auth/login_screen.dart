@@ -1,7 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:emotion_music_app/controller/services/auth_exception.dart';
 import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
-import 'package:emotion_music_app/ui/screens/emotion_detection_home_screen.dart';
+import 'package:emotion_music_app/ui/screens/main_bottom_nav_bar_screen.dart';
 import 'package:emotion_music_app/ui/widgets/custom_auth_button.dart';
 import 'package:emotion_music_app/ui/widgets/custom_text_field.dart';
 import 'package:emotion_music_app/ui/widgets/snack_message.dart';
@@ -36,7 +36,7 @@ class _LoginScreenState extends State<LoginScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const EmotionDetectionHomeScreen(),
+            builder: (context) => const MainBottomNavBarScreen(),
           ),
         );
       }
@@ -55,6 +55,32 @@ class _LoginScreenState extends State<LoginScreen> {
         context,
         "Something happen: ${e.toString()} ",
       );
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    try {
+      await _firebaseAuthService.signInWithGoogle();
+
+      if (mounted) {
+        SnackMessage.showSnakMessage(context, "Sign in success");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const MainBottomNavBarScreen(),
+          ),
+        );
+      }
+    } on AuthException catch (e) {
+      if (mounted) {
+        SnackMessage.showSnakMessage(
+          context,
+          "Google Sign in failed: ${e.message} ",
+        );
+      }
+    } catch (e) {
+      print("Sign in aborted: $e");
     }
   }
 
@@ -269,37 +295,42 @@ class _LoginScreenState extends State<LoginScreen> {
     required String label,
     required List<Color> gradientColors,
   }) {
-    return Container(
-      height: 55,
-      width: 150,
+    return InkWell(
+      onTap: () {
+        _signInWithGoogle();
+      },
+      child: Container(
+        height: 55,
+        width: 150,
 
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            gradientColors[0].withValues(alpha: 0.1),
-            gradientColors[1].withValues(alpha: 0.1),
-          ],
-          begin: Alignment.centerLeft,
-          end: Alignment.centerRight,
-        ),
-
-        borderRadius: BorderRadius.circular(16),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(icon, color: gradientColors[0]),
-
-          SizedBox(width: 8),
-          Text(
-            label,
-            style: TextStyle(
-              color: gradientColors[0],
-
-              fontWeight: FontWeight.bold,
-            ),
+        decoration: BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              gradientColors[0].withValues(alpha: 0.1),
+              gradientColors[1].withValues(alpha: 0.1),
+            ],
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
           ),
-        ],
+
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(icon, color: gradientColors[0]),
+
+            SizedBox(width: 8),
+            Text(
+              label,
+              style: TextStyle(
+                color: gradientColors[0],
+
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
