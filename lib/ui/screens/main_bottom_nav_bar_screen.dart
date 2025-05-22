@@ -1,6 +1,6 @@
 import 'package:emotion_music_app/ui/screens/chat_screen.dart';
 import 'package:emotion_music_app/ui/screens/emotion_detection_home_screen.dart';
-import 'package:emotion_music_app/ui/screens/music_player_screen.dart';
+import 'package:emotion_music_app/ui/screens/music_player/music_player_screen.dart';
 import 'package:flutter/material.dart';
 
 class MainBottomNavBarScreen extends StatefulWidget {
