@@ -1,6 +1,6 @@
 import 'package:animate_do/animate_do.dart';
-import 'package:emotion_music_app/controller/services/auth_exception.dart';
-import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/services/auth_exception.dart';
+import 'package:emotion_music_app/services/firebase_auth_service.dart';
 import 'package:emotion_music_app/ui/screens/auth/login_screen.dart';
 import 'package:emotion_music_app/ui/widgets/custom_auth_button.dart';
 import 'package:emotion_music_app/ui/widgets/custom_text_field.dart';
