@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/services/firebase_auth_service.dart';
 import 'package:emotion_music_app/ui/screens/auth/login_screen.dart';
 import 'package:emotion_music_app/ui/screens/main_bottom_nav_bar_screen.dart';
 import 'package:firebase_auth/firebase_auth.dart';

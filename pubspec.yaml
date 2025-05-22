@@ -42,6 +42,9 @@ dependencies:
   google_sign_in: ^6.3.0
   just_audio: ^0.10.1
   audio_session: ^0.2.1
+  flutter_appauth: ^9.0.0
+  http: ^1.4.0
+  spotify_sdk: ^3.0.2
 
 dev_dependencies:
   flutter_test:

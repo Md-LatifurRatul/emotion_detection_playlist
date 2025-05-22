@@ -1,5 +1,5 @@
-import 'package:emotion_music_app/controller/services/auth_exception.dart';
-import 'package:emotion_music_app/controller/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/services/auth_exception.dart';
+import 'package:emotion_music_app/services/firebase_auth_service.dart';
 import 'package:emotion_music_app/ui/screens/auth/login_screen.dart';
 import 'package:emotion_music_app/ui/widgets/confirm_alert_dialogue.dart';
 import 'package:emotion_music_app/ui/widgets/mood_detection_button.dart';
