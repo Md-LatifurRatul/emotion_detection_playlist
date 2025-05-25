@@ -1,6 +1,7 @@
 import 'package:animate_do/animate_do.dart';
 import 'package:emotion_music_app/services/auth_exception.dart';
 import 'package:emotion_music_app/services/firebase_auth_service.dart';
+import 'package:emotion_music_app/ui/screens/auth/sign_up_screen.dart';
 import 'package:emotion_music_app/ui/screens/main_bottom_nav_bar_screen.dart';
 import 'package:emotion_music_app/ui/widgets/custom_auth_button.dart';
 import 'package:emotion_music_app/ui/widgets/custom_text_field.dart';
@@ -158,9 +159,19 @@ class _LoginScreenState extends State<LoginScreen> {
 
                         style: TextStyle(color: Color(0xFF1D1C1D)),
                       ),
-
-                      GestureDetector(
-                        onTap: widget.onSignUpTap,
+                      InkWell(
+                        onTap: () {
+                          Navigator.of(context).push(
+                            MaterialPageRoute(
+                              builder:
+                                  (context) => SignUpScreen(
+                                    onLoginTap: () {
+                                      Navigator.pop(context);
+                                    },
+                                  ),
+                            ),
+                          );
+                        },
 
                         child: Text(
                           "Sign Up",

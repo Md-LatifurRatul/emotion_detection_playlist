@@ -102,6 +102,9 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     if (_currentIndex < _songs.length - 1) {
       _currentIndex++;
       _loadAndPlay();
+    } else {
+      _currentIndex = 0;
+      _loadAndPlay();
     }
   }
 
@@ -178,10 +181,15 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 final position = snapshot.data ?? Duration.zero;
 
                 final total = _audioPlayer.duration ?? Duration.zero;
+                final totalSeconds =
+                    total.inSeconds > 0 ? total.inSeconds.toDouble() : 1.0;
+                final positionSeconds =
+                    position.inSeconds.clamp(0, total.inSeconds).toDouble();
 
                 return Slider(
-                  value: position.inSeconds.toDouble(),
-                  max: total.inSeconds.toDouble(),
+                  min: 0.0,
+                  value: positionSeconds,
+                  max: totalSeconds,
 
                   onChanged: (value) {
                     _audioPlayer.seek(Duration(seconds: value.toInt()));

@@ -31,8 +31,6 @@ android {
         targetSdk = flutter.targetSdkVersion
         versionCode = flutter.versionCode
         versionName = flutter.versionName
-        manifestPlaceholders = [redirectSchemeName: "spotify-sdk", redirectHostName: "auth"]
-        ...
     }
 
     buildTypes {
