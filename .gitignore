@@ -49,4 +49,4 @@ app.*.map.json
 /android/app/google-services.json
 /lib/firebase_options.dart
 /firebase.json
-lib/core/spotify_key.dart
+lib/core/supabase_key.dart

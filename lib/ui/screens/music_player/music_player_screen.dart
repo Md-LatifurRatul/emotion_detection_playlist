@@ -3,7 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
-  const MusicPlayerScreen({super.key});
+  const MusicPlayerScreen({super.key, this.track});
+  final Map<String, String>? track;
 
   @override
   State<MusicPlayerScreen> createState() => _MusicPlayerScreenState();
@@ -25,6 +26,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       vsync: this,
       duration: const Duration(seconds: 2),
     );
+    _audioPlayer = AudioPlayer();
 
     _imageAnimation = CurvedAnimation(
       parent: _animationController,
