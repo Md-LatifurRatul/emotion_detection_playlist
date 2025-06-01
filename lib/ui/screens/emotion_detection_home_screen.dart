@@ -6,8 +6,23 @@ import 'package:emotion_music_app/ui/widgets/mood_detection_button.dart';
 import 'package:emotion_music_app/ui/widgets/snack_message.dart';
 import 'package:flutter/material.dart';
 
-class EmotionDetectionHomeScreen extends StatelessWidget {
+class EmotionDetectionHomeScreen extends StatefulWidget {
   const EmotionDetectionHomeScreen({super.key});
+
+  @override
+  State<EmotionDetectionHomeScreen> createState() =>
+      _EmotionDetectionHomeScreenState();
+}
+
+class _EmotionDetectionHomeScreenState
+    extends State<EmotionDetectionHomeScreen> {
+  // List<Map<String, String>> _songs = [];
+  // bool _isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   Future<void> _signOut(BuildContext context) async {
     final firebaseAuthService = FirebaseAuthService();
@@ -79,7 +94,7 @@ class EmotionDetectionHomeScreen extends StatelessWidget {
                 MoodDetectionButton(
                   icon: Icons.mic,
                   label: 'Speech Detection',
-                  onTap: () {},
+                  onTap: () async {},
                 ),
               ],
             ),
@@ -131,8 +146,15 @@ class EmotionDetectionHomeScreen extends StatelessWidget {
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
 
       child: ListTile(
-        leading: const Icon(Icons.music_note, color: Colors.white),
-
+        // leading: ClipRRect(
+        //   borderRadius: BorderRadius.circular(8),
+        //   child: Image.network(
+        //     titles[index],
+        //     width: 50,
+        //     height: 50,
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
         title: Text(
           titles[index],
           style: const TextStyle(
@@ -140,12 +162,12 @@ class EmotionDetectionHomeScreen extends StatelessWidget {
             fontWeight: FontWeight.bold,
           ),
         ),
-
-        trailing: const Icon(
-          Icons.arrow_forward_ios,
-          color: Colors.white54,
-          size: 18,
+        subtitle: Text(
+          "Mood: ${titles[index]}",
+          style: const TextStyle(color: Colors.white70),
         ),
+
+        trailing: const Icon(Icons.play_arrow, color: Colors.white),
         onTap: () {},
       ),
     );
