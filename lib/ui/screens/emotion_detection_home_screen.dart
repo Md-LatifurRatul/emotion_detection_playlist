@@ -1,3 +1,5 @@
+import 'package:emotion_music_app/controller/current_track_notifier.dart';
+import 'package:emotion_music_app/controller/navigation_provider.dart';
 import 'package:emotion_music_app/controller/song_provider.dart';
 import 'package:emotion_music_app/model/song_model.dart';
 import 'package:emotion_music_app/services/auth_exception.dart';
@@ -50,6 +52,7 @@ class _EmotionDetectionHomeScreenState
   @override
   Widget build(BuildContext context) {
     final songProvider = context.watch<SongProvider>();
+    final currentSongs = songProvider.songs;
 
     return Scaffold(
       backgroundColor: Colors.black,
@@ -125,7 +128,7 @@ class _EmotionDetectionHomeScreenState
             child:
                 songProvider.isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : songProvider.songs.isEmpty
+                    : currentSongs.isEmpty
                     ? const Center(
                       child: Text(
                         "No songs found for this mood",
@@ -136,9 +139,9 @@ class _EmotionDetectionHomeScreenState
                       itemCount: songProvider.songs.length,
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       itemBuilder: (context, index) {
-                        final SongModel song = songProvider.songs[index];
+                        final SongModel song = currentSongs[index];
 
-                        return _buildPlaylistCard(song);
+                        return _buildPlaylistCard(song, currentSongs, index);
                       },
                     ),
           ),
@@ -147,7 +150,11 @@ class _EmotionDetectionHomeScreenState
     );
   }
 
-  Widget _buildPlaylistCard(SongModel songs) {
+  Widget _buildPlaylistCard(
+    SongModel songs,
+    List<SongModel> currentSongs,
+    int index,
+  ) {
     return Card(
       color: Colors.grey[850],
 
@@ -177,7 +184,10 @@ class _EmotionDetectionHomeScreenState
         ),
 
         trailing: const Icon(Icons.play_arrow, color: Colors.white),
-        onTap: () {},
+        onTap: () {
+          context.read<CurrentTrackNotifier>().setPlayList(currentSongs, index);
+          context.read<NavigationProvider>().setSelectedIndex(1);
+        },
       ),
     );
   }

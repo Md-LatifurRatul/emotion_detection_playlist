@@ -1,4 +1,5 @@
 import 'package:emotion_music_app/app.dart';
+import 'package:emotion_music_app/controller/current_track_notifier.dart';
 import 'package:emotion_music_app/controller/navigation_provider.dart';
 import 'package:emotion_music_app/controller/song_provider.dart';
 import 'package:emotion_music_app/core/supabase_key.dart';
@@ -24,6 +25,9 @@ Future<void> main() async {
           create: (_) => NavigationProvider(),
         ),
         ChangeNotifierProvider<SongProvider>(create: (_) => SongProvider()),
+        ChangeNotifierProvider<CurrentTrackNotifier>(
+          create: (_) => CurrentTrackNotifier(),
+        ),
       ],
 
       child: const EmotionDetecterPlaylistApp(),
