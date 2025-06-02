@@ -1,4 +1,6 @@
 import 'package:audio_session/audio_session.dart';
+import 'package:emotion_music_app/model/song_model.dart';
+import 'package:emotion_music_app/services/supbase_service.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
@@ -17,11 +19,13 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   late AudioPlayer _audioPlayer;
   bool isPlaying = false;
   int _currentIndex = 0;
+  List<SongModel> _songsList = [];
 
   @override
   void initState() {
     super.initState();
-    _initAudio();
+    // _initAudio();
+    // _loadSongs();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -82,6 +86,14 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     } catch (e) {
       print("Error loading audio: $e");
     }
+  }
+
+  Future<void> _loadSongs() async {
+    final songs = await SupbaseService().fetchSongsByMood('happy');
+    // print(songs);
+    setState(() {
+      _songsList = songs;
+    });
   }
 
   void _playPause() {

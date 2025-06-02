@@ -1,5 +1,6 @@
 import 'package:emotion_music_app/app.dart';
 import 'package:emotion_music_app/controller/navigation_provider.dart';
+import 'package:emotion_music_app/controller/song_provider.dart';
 import 'package:emotion_music_app/core/supabase_key.dart';
 import 'package:emotion_music_app/firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -18,7 +19,12 @@ Future<void> main() async {
 
   runApp(
     MultiProvider(
-      providers: [ChangeNotifierProvider(create: (_) => NavigationProvider())],
+      providers: [
+        ChangeNotifierProvider<NavigationProvider>(
+          create: (_) => NavigationProvider(),
+        ),
+        ChangeNotifierProvider<SongProvider>(create: (_) => SongProvider()),
+      ],
 
       child: const EmotionDetecterPlaylistApp(),
     ),
