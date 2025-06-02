@@ -1,3 +1,5 @@
+import 'package:emotion_music_app/controller/song_provider.dart';
+import 'package:emotion_music_app/model/song_model.dart';
 import 'package:emotion_music_app/services/auth_exception.dart';
 import 'package:emotion_music_app/services/firebase_auth_service.dart';
 import 'package:emotion_music_app/ui/screens/auth/login_screen.dart';
@@ -5,6 +7,7 @@ import 'package:emotion_music_app/ui/widgets/confirm_alert_dialogue.dart';
 import 'package:emotion_music_app/ui/widgets/mood_detection_button.dart';
 import 'package:emotion_music_app/ui/widgets/snack_message.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class EmotionDetectionHomeScreen extends StatefulWidget {
   const EmotionDetectionHomeScreen({super.key});
@@ -16,12 +19,11 @@ class EmotionDetectionHomeScreen extends StatefulWidget {
 
 class _EmotionDetectionHomeScreenState
     extends State<EmotionDetectionHomeScreen> {
-  // List<Map<String, String>> _songs = [];
-  // bool _isLoading = true;
-
   @override
   void initState() {
     super.initState();
+    final songProvider = Provider.of<SongProvider>(context, listen: false);
+    songProvider.fetchSongs();
   }
 
   Future<void> _signOut(BuildContext context) async {
@@ -47,6 +49,8 @@ class _EmotionDetectionHomeScreenState
 
   @override
   Widget build(BuildContext context) {
+    final songProvider = context.watch<SongProvider>();
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
@@ -102,10 +106,10 @@ class _EmotionDetectionHomeScreenState
 
           const SizedBox(height: 30),
 
-          const Padding(
+          Padding(
             padding: EdgeInsets.symmetric(horizontal: 20),
             child: Text(
-              "Suggested Playlists",
+              "Mood Songs List (${songProvider.currentMood.toUpperCase()})",
 
               style: TextStyle(
                 color: Colors.white,
@@ -118,27 +122,32 @@ class _EmotionDetectionHomeScreenState
           const SizedBox(height: 10),
 
           Expanded(
-            child: ListView.builder(
-              itemCount: 5,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              itemBuilder: (context, index) {
-                return _buildPlaylistCard(index);
-              },
-            ),
+            child:
+                songProvider.isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : songProvider.songs.isEmpty
+                    ? const Center(
+                      child: Text(
+                        "No songs found for this mood",
+                        style: TextStyle(color: Colors.white),
+                      ),
+                    )
+                    : ListView.builder(
+                      itemCount: songProvider.songs.length,
+                      padding: const EdgeInsets.symmetric(horizontal: 20),
+                      itemBuilder: (context, index) {
+                        final SongModel song = songProvider.songs[index];
+
+                        return _buildPlaylistCard(song);
+                      },
+                    ),
           ),
         ],
       ),
     );
   }
 
-  Widget _buildPlaylistCard(int index) {
-    final titles = [
-      "Happy Vibes",
-      "Relaxing Tunes",
-      "Energetic Beats",
-      "Chill Hits",
-      "Focus Mode",
-    ];
+  Widget _buildPlaylistCard(SongModel songs) {
     return Card(
       color: Colors.grey[850],
 
@@ -146,24 +155,24 @@ class _EmotionDetectionHomeScreenState
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
 
       child: ListTile(
-        // leading: ClipRRect(
-        //   borderRadius: BorderRadius.circular(8),
-        //   child: Image.network(
-        //     titles[index],
-        //     width: 50,
-        //     height: 50,
-        //     fit: BoxFit.cover,
-        //   ),
-        // ),
+        leading: ClipRRect(
+          borderRadius: BorderRadius.circular(8),
+          child: Image.network(
+            songs.coverpage,
+            width: 50,
+            height: 50,
+            fit: BoxFit.cover,
+          ),
+        ),
         title: Text(
-          titles[index],
+          songs.title,
           style: const TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
           ),
         ),
         subtitle: Text(
-          "Mood: ${titles[index]}",
+          songs.artist,
           style: const TextStyle(color: Colors.white70),
         ),
 

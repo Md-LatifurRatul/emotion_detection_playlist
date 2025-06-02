@@ -1,4 +1,3 @@
-import 'package:emotion_music_app/controller/current_track_notifier.dart';
 import 'package:emotion_music_app/controller/navigation_provider.dart';
 import 'package:emotion_music_app/ui/screens/chat_screen.dart';
 import 'package:emotion_music_app/ui/screens/emotion_detection_home_screen.dart';
@@ -24,17 +23,6 @@ class _MainBottomNavBarScreenState extends State<MainBottomNavBarScreen> {
     BottomNavigationBarItem(icon: Icon(Icons.music_note), label: "Music"),
     BottomNavigationBarItem(icon: Icon(Icons.chat), label: "Chat"),
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<CurrentTrackNotifier>().addListener(() {
-      final notifier = context.read<NavigationProvider>();
-      if (context.read<CurrentTrackNotifier>().track != null) {
-        notifier.setSelectedIndex(1);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
