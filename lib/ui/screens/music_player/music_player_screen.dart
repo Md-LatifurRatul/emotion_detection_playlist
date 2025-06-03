@@ -1,8 +1,6 @@
-import 'package:audio_session/audio_session.dart';
-import 'package:emotion_music_app/model/song_model.dart';
-import 'package:emotion_music_app/services/supbase_service.dart';
+import 'package:emotion_music_app/controller/current_track_notifier.dart';
 import 'package:flutter/material.dart';
-import 'package:just_audio/just_audio.dart';
+import 'package:provider/provider.dart';
 
 class MusicPlayerScreen extends StatefulWidget {
   const MusicPlayerScreen({super.key, this.track});
@@ -16,133 +14,86 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
     with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<double> _imageAnimation;
-  late AudioPlayer _audioPlayer;
-  bool isPlaying = false;
-  int _currentIndex = 0;
-  List<SongModel> _songsList = [];
+  // final ItemScrollController _scrollController = ItemScrollController();
+  List<String> _lyrics = [];
 
   @override
   void initState() {
     super.initState();
-    // _initAudio();
-    // _loadSongs();
     _animationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
-    );
-    _audioPlayer = AudioPlayer();
+    )..repeat(reverse: true);
 
     _imageAnimation = CurvedAnimation(
       parent: _animationController,
       curve: Curves.easeInOut,
     );
 
-    _animationController.repeat(reverse: true);
-  }
+    final notifier = context.read<CurrentTrackNotifier>();
+    notifier.addListener(_onTrackChanged);
 
-  final List<Map<String, String>> _songs = [
-    {
-      "title": "Chill Vibes",
-      "artist": "Warfaze",
-
-      "url":
-          "https://www.music.com.bd/download/Music/W/Warfaze/Shotto/04.%20Warfaze%20-%20Purnota%20(music.com.bd).mp3",
-
-      "image":
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
-    },
-
-    {
-      "title": "Mood Booster",
-      "artist": "Artcell",
-
-      "url":
-          "https://music.com.bd/download/Music/A/Artcell/Oniket%20Prantor/Artcell%20-%20Oniket%20Prantor%20(music.com.bd).mp3",
-
-      "image":
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
-    },
-
-    {
-      "title": "Chill Vibes",
-      "artist": "Warfaze",
-
-      "url":
-          "https://www.music.com.bd/download/Music/W/Warfaze/Shotto/04.%20Warfaze%20-%20Purnota%20(music.com.bd).mp3",
-
-      "image":
-          "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
-    },
-  ];
-
-  Future<void> _initAudio() async {
-    _audioPlayer = AudioPlayer();
-
-    final session = await AudioSession.instance;
-    await session.configure(const AudioSessionConfiguration.music());
-
-    try {
-      await _audioPlayer.setUrl(_songs[_currentIndex]["url"]!);
-    } catch (e) {
-      print("Error loading audio: $e");
+    if (notifier.currentTrack != null) {
+      _onTrackChanged();
     }
   }
 
-  Future<void> _loadSongs() async {
-    final songs = await SupbaseService().fetchSongsByMood('happy');
-    // print(songs);
-    setState(() {
-      _songsList = songs;
-    });
+  Future<void> _onTrackChanged() async {
+    final notifier = context.read<CurrentTrackNotifier>();
+    final track = notifier.currentTrack;
+    if (track == null) return;
+    // _loadLyrics(track.title, track.artist);
+
+    // WidgetsBinding.instance.addPostFrameCallback((_) {
+    //   if (_scrollController.isAttached) {
+    //     _scrollController.jumpTo(index: 0);
+    //   }
+    // });
   }
 
-  void _playPause() {
-    if (_audioPlayer.playing) {
-      _audioPlayer.pause();
-      _animationController.stop();
-      setState(() {
-        isPlaying = false;
-      });
-    } else {
-      _audioPlayer.play();
-      _animationController.repeat();
-      setState(() {
-        isPlaying = true;
-      });
-    }
-  }
+  // Future<void> _loadLyrics(String title, String artist) async {
+  //   final artistEnc = Uri.encodeComponent(artist);
+  //   final titleEnc = Uri.encodeComponent(title);
+  //   final res = await get(
+  //     Uri.parse("https://api.lyrics.ovh/v1/$artistEnc/$titleEnc"),
+  //   );
 
-  void _playNext() {
-    if (_currentIndex < _songs.length - 1) {
-      _currentIndex++;
-      _loadAndPlay();
-    } else {
-      _currentIndex = 0;
-      _loadAndPlay();
-    }
-  }
-
-  void _playPrevious() {
-    if (_currentIndex > 0) {
-      _currentIndex--;
-      _loadAndPlay();
-    }
-  }
-
-  Future<void> _loadAndPlay() async {
-    await _audioPlayer.setUrl(_songs[_currentIndex]['url']!);
-    _audioPlayer.play();
-    setState(() {
-      isPlaying = true;
-    });
-  }
+  //   if (res.statusCode == 200) {
+  //     final text = jsonDecode(res.body)['lyrics'] as String;
+  //     setState(() {
+  //       _lyrics =
+  //           text.split("\n").where((line) => line.trim().isNotEmpty).toList();
+  //     });
+  //   } else {
+  //     setState(() => _lyrics = ['Lyrics not found.']);
+  //   }
+  // }
 
   @override
   Widget build(BuildContext context) {
+    final notifier = context.watch<CurrentTrackNotifier>();
+    final track = notifier.currentTrack;
+    final player = notifier.player;
+
+    if (track == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(
+          child: Text(
+            "No Track Selected",
+            style: TextStyle(color: Colors.white),
+          ),
+        ),
+      );
+    }
+
     return Scaffold(
       backgroundColor: Colors.black,
       appBar: AppBar(
-        title: Text("Now Playing", style: TextStyle(color: Colors.white)),
+        title: Text(
+          "Now Playing: ${track.title}",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Colors.transparent,
       ),
       body: Padding(
@@ -158,7 +109,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
-                    image: NetworkImage(_songs[_currentIndex]['image']!),
+                    image: NetworkImage(track.coverpage),
                     fit: BoxFit.cover,
                   ),
 
@@ -176,7 +127,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             SizedBox(height: 30),
 
             Text(
-              _songs[_currentIndex]['title']!,
+              track.title,
               style: TextStyle(
                 fontSize: 22,
                 color: Colors.white,
@@ -184,29 +135,29 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               ),
             ),
             Text(
-              _songs[_currentIndex]['artist']!,
+              track.artist,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 20),
 
             StreamBuilder<Duration>(
-              stream: _audioPlayer.positionStream,
+              stream: notifier.positionStream,
               builder: (context, snapshot) {
                 final position = snapshot.data ?? Duration.zero;
 
-                final total = _audioPlayer.duration ?? Duration.zero;
-                final totalSeconds =
+                final total = notifier.duration ?? Duration.zero;
+                final max =
                     total.inSeconds > 0 ? total.inSeconds.toDouble() : 1.0;
-                final positionSeconds =
+                final val =
                     position.inSeconds.clamp(0, total.inSeconds).toDouble();
 
                 return Slider(
                   min: 0.0,
-                  value: positionSeconds,
-                  max: totalSeconds,
+                  value: val,
+                  max: max,
 
                   onChanged: (value) {
-                    _audioPlayer.seek(Duration(seconds: value.toInt()));
+                    player.seek(Duration(seconds: value.toInt()));
                   },
                   activeColor: Colors.blueAccent,
                   inactiveColor: Colors.white24,
@@ -214,25 +165,19 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               },
             ),
 
-            // Slider(
-            //   value: 0.5,
-            //   onChanged: (value) {},
-            //   activeColor: Colors.white,
-            //   inactiveColor: Colors.grey,
-            // ),
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
                   icon: Icon(Icons.skip_previous, color: Colors.white),
                   iconSize: 36,
-                  onPressed: _playPrevious,
+                  onPressed: notifier.playPrevious,
                 ),
                 const SizedBox(width: 10),
 
                 ElevatedButton(
                   onPressed: () {
-                    _playPause();
+                    notifier.playPause();
                   },
                   style: ElevatedButton.styleFrom(
                     shape: const CircleBorder(),
@@ -241,7 +186,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                   ),
 
                   child: Icon(
-                    isPlaying ? Icons.pause : Icons.play_arrow,
+                    notifier.isPlaying ? Icons.pause : Icons.play_arrow,
                     color: Colors.white,
                     size: 30,
                   ),
@@ -251,7 +196,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                   icon: Icon(Icons.skip_next, color: Colors.white),
                   color: Colors.white,
                   iconSize: 36,
-                  onPressed: _playNext,
+                  onPressed: notifier.playNext,
                 ),
               ],
             ),
@@ -281,6 +226,31 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                     ),
                   ],
                 ),
+
+                // ScrollablePositionedList.builder(
+                //   itemScrollController: _scrollController,
+
+                //   itemCount: _lyrics.length,
+                //   itemBuilder: (context, i) {
+                //     final currentLine = (player.position.inSeconds ~/ 5).clamp(
+                //       0,
+                //       _lyrics.length,
+                //     );
+
+                //     final isActice = i == currentLine;
+
+                //     return Padding(
+                //       padding: const EdgeInsets.symmetric(vertical: 4),
+                //       child: Text(
+                //         _lyrics[i],
+                //         style: TextStyle(
+                //           color: isActice ? Colors.blueAccent : Colors.white,
+                //           fontSize: 16,
+                //         ),
+                //       ),
+                //     );
+                //   },
+                // ),
               ),
             ),
           ],
@@ -297,7 +267,85 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   @override
   void dispose() {
     _animationController.dispose();
-    _audioPlayer.dispose();
     super.dispose();
   }
 }
+
+
+  // void _playPause() {
+  //   if (_audioPlayer.playing) {
+  //     _audioPlayer.pause();
+  //     _animationController.stop();
+  //     setState(() {
+  //       isPlaying = false;
+  //     });
+  //   } else {
+  //     _audioPlayer.play();
+  //     _animationController.repeat();
+  //     setState(() {
+  //       isPlaying = true;
+  //     });
+  //   }
+  // }
+
+  // void _playNext() {
+  //   if (_currentIndex < _songs.length - 1) {
+  //     _currentIndex++;
+  //     _loadAndPlay();
+  //   } else {
+  //     _currentIndex = 0;
+  //     _loadAndPlay();
+  //   }
+  // }
+
+  // void _playPrevious() {
+  //   if (_currentIndex > 0) {
+  //     _currentIndex--;
+  //     _loadAndPlay();
+  //   }
+  // }
+
+  // Future<void> _loadAndPlay() async {
+  //   await _audioPlayer.setUrl(_songs[_currentIndex]['url']!);
+  //   _audioPlayer.play();
+  //   setState(() {
+  //     isPlaying = true;
+  //   });
+  // }
+
+
+
+  // final List<Map<String, String>> _songs = [
+  //   {
+  //     "title": "Chill Vibes",
+  //     "artist": "Warfaze",
+
+  //     "url":
+  //         "https://www.music.com.bd/download/Music/W/Warfaze/Shotto/04.%20Warfaze%20-%20Purnota%20(music.com.bd).mp3",
+
+  //     "image":
+  //         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
+  //   },
+
+  //   {
+  //     "title": "Mood Booster",
+  //     "artist": "Artcell",
+
+  //     "url":
+  //         "https://music.com.bd/download/Music/A/Artcell/Oniket%20Prantor/Artcell%20-%20Oniket%20Prantor%20(music.com.bd).mp3",
+
+  //     "image":
+  //         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
+  //   },
+
+  //   {
+  //     "title": "Chill Vibes",
+  //     "artist": "Warfaze",
+
+  //     "url":
+  //         "https://www.music.com.bd/download/Music/W/Warfaze/Shotto/04.%20Warfaze%20-%20Purnota%20(music.com.bd).mp3",
+
+  //     "image":
+  //         "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRI6oe0i5K8vjoaCdABY5I9uJffX2M1NIkSQA&s",
+  //   },
+  // ];

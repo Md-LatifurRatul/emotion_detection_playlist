@@ -10,7 +10,7 @@ class SupbaseService {
         .select()
         .eq('mood', mood)
         .order('created_at', ascending: false);
-    print(response);
+    // print(response);
 
     return (response as List).map((item) => SongModel.fromMap(item)).toList();
   }
