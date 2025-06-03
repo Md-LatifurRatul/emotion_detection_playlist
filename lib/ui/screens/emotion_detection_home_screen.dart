@@ -24,8 +24,12 @@ class _EmotionDetectionHomeScreenState
   @override
   void initState() {
     super.initState();
-    final songProvider = Provider.of<SongProvider>(context, listen: false);
-    songProvider.fetchSongs();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      Provider.of<SongProvider>(
+        context,
+        listen: false,
+      ).setMoodAndFetch("happy");
+    });
   }
 
   Future<void> _signOut(BuildContext context) async {

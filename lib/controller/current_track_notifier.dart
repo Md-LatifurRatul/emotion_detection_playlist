@@ -9,6 +9,8 @@ class CurrentTrackNotifier extends ChangeNotifier {
   List<SongModel> _playlist = [];
   int _currentIndex = -1;
 
+  AudioPlayer get player => _player;
+
   CurrentTrackNotifier() {
     _initAudioSession();
   }
@@ -63,9 +65,10 @@ class CurrentTrackNotifier extends ChangeNotifier {
   Future<void> _loadAndPlayCurrent() async {
     final track = currentTrack;
     if (track == null) return;
-    final url = track.audioUrl;
     try {
-      await _player.setUrl(url);
+      await _player.stop();
+      await _player.setUrl(track.audioUrl);
+      await _player.seek(Duration.zero);
       await _player.play();
     } catch (e) {
       print("Error loading audio: $e");
