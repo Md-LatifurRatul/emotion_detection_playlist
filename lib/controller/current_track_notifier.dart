@@ -3,13 +3,20 @@ import 'package:emotion_music_app/model/song_model.dart';
 import 'package:flutter/material.dart';
 import 'package:just_audio/just_audio.dart';
 
+enum RepeatMode { off, repeatOne, repeatAll }
+
 class CurrentTrackNotifier extends ChangeNotifier {
   final AudioPlayer _player = AudioPlayer();
+  RepeatMode _repeatMode = RepeatMode.off;
 
   List<SongModel> _playlist = [];
   int _currentIndex = -1;
 
   AudioPlayer get player => _player;
+  RepeatMode get repeatMode => _repeatMode;
+  // Expose positionStream and duration for UI slider
+  Stream<Duration> get positionStream => _player.positionStream;
+  Duration? get duration => _player.duration;
 
   CurrentTrackNotifier() {
     _initAudioSession();
@@ -75,10 +82,19 @@ class CurrentTrackNotifier extends ChangeNotifier {
     }
   }
 
-  // Expose positionStream and duration for UI slider
-
-  Stream<Duration> get positionStream => _player.positionStream;
-  Duration? get duration => _player.duration;
+  void toggleRepeatMode() {
+    if (_repeatMode == RepeatMode.off) {
+      _repeatMode = RepeatMode.repeatOne;
+      _player.setLoopMode(LoopMode.one);
+    } else if (_repeatMode == RepeatMode.repeatOne) {
+      _repeatMode = RepeatMode.repeatAll;
+      _player.setLoopMode(LoopMode.all);
+    } else {
+      _repeatMode = RepeatMode.off;
+      _player.setLoopMode(LoopMode.off);
+    }
+    notifyListeners();
+  }
 
   @override
   void dispose() {
