@@ -15,7 +15,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
   late AnimationController _animationController;
   late Animation<double> _imageAnimation;
   // final ItemScrollController _scrollController = ItemScrollController();
-  List<String> _lyrics = [];
+  // List<String> _lyrics = [];
 
   @override
   void initState() {
@@ -71,11 +71,11 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
 
   @override
   Widget build(BuildContext context) {
-    final notifier = context.watch<CurrentTrackNotifier>();
-    final track = notifier.currentTrack;
-    final player = notifier.player;
+    final trackNotifier = context.watch<CurrentTrackNotifier>();
+    final currentTrack = trackNotifier.currentTrack;
+    final player = trackNotifier.player;
 
-    if (track == null) {
+    if (currentTrack == null) {
       return const Scaffold(
         backgroundColor: Colors.black,
         body: Center(
@@ -91,7 +91,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
       backgroundColor: Colors.black,
       appBar: AppBar(
         title: Text(
-          "Now Playing: ${track.title}",
+          "Now Playing: ${currentTrack.title}",
           style: TextStyle(color: Colors.white),
         ),
         backgroundColor: Colors.transparent,
@@ -109,7 +109,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   image: DecorationImage(
-                    image: NetworkImage(track.coverpage),
+                    image: NetworkImage(currentTrack.coverpage),
                     fit: BoxFit.cover,
                   ),
 
@@ -127,7 +127,7 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
             SizedBox(height: 30),
 
             Text(
-              track.title,
+              currentTrack.title,
               style: TextStyle(
                 fontSize: 22,
                 color: Colors.white,
@@ -135,17 +135,17 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               ),
             ),
             Text(
-              track.artist,
+              currentTrack.artist,
               style: TextStyle(fontSize: 16, color: Colors.grey),
             ),
             SizedBox(height: 20),
 
             StreamBuilder<Duration>(
-              stream: notifier.positionStream,
+              stream: trackNotifier.positionStream,
               builder: (context, snapshot) {
                 final position = snapshot.data ?? Duration.zero;
 
-                final total = notifier.duration ?? Duration.zero;
+                final total = trackNotifier.duration ?? Duration.zero;
                 final max =
                     total.inSeconds > 0 ? total.inSeconds.toDouble() : 1.0;
                 final val =
@@ -165,94 +165,10 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
               },
             ),
 
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                IconButton(
-                  icon: Icon(Icons.skip_previous, color: Colors.white),
-                  iconSize: 36,
-                  onPressed: notifier.playPrevious,
-                ),
-                const SizedBox(width: 10),
-
-                ElevatedButton(
-                  onPressed: () {
-                    notifier.playPause();
-                  },
-                  style: ElevatedButton.styleFrom(
-                    shape: const CircleBorder(),
-                    backgroundColor: Colors.blueAccent,
-                    padding: const EdgeInsets.all(18),
-                  ),
-
-                  child: Icon(
-                    notifier.isPlaying ? Icons.pause : Icons.play_arrow,
-                    color: Colors.white,
-                    size: 30,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                IconButton(
-                  icon: Icon(Icons.skip_next, color: Colors.white),
-                  color: Colors.white,
-                  iconSize: 36,
-                  onPressed: notifier.playNext,
-                ),
-              ],
-            ),
+            _buildMusicControllerButton(trackNotifier),
             SizedBox(height: 10),
 
-            Expanded(
-              child: Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(8.0),
-                decoration: BoxDecoration(
-                  color: Colors.grey[900],
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: ListView(
-                  children: [
-                    Text(
-                      'Lyrics Line 1',
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      "Lyrics Line 2",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                    Text(
-                      "Lyrics Line 3",
-                      style: TextStyle(color: Colors.white, fontSize: 16),
-                    ),
-                  ],
-                ),
-
-                // ScrollablePositionedList.builder(
-                //   itemScrollController: _scrollController,
-
-                //   itemCount: _lyrics.length,
-                //   itemBuilder: (context, i) {
-                //     final currentLine = (player.position.inSeconds ~/ 5).clamp(
-                //       0,
-                //       _lyrics.length,
-                //     );
-
-                //     final isActice = i == currentLine;
-
-                //     return Padding(
-                //       padding: const EdgeInsets.symmetric(vertical: 4),
-                //       child: Text(
-                //         _lyrics[i],
-                //         style: TextStyle(
-                //           color: isActice ? Colors.blueAccent : Colors.white,
-                //           fontSize: 16,
-                //         ),
-                //       ),
-                //     );
-                //   },
-                // ),
-              ),
-            ),
+            _buildMusicLyrics(),
           ],
         ),
       ),
@@ -260,6 +176,122 @@ class _MusicPlayerScreenState extends State<MusicPlayerScreen>
         backgroundColor: Colors.blueAccent,
         child: Icon(Icons.chat),
         onPressed: () {},
+      ),
+    );
+  }
+
+  Widget _buildMusicControllerButton(CurrentTrackNotifier trackNotifier) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        IconButton(
+          icon: Icon(Icons.skip_previous, color: Colors.white),
+          iconSize: 36,
+          onPressed: trackNotifier.playPrevious,
+        ),
+        const SizedBox(width: 10),
+
+        ElevatedButton(
+          onPressed: () {
+            trackNotifier.playPause();
+          },
+          style: ElevatedButton.styleFrom(
+            shape: const CircleBorder(),
+            backgroundColor: Colors.blueAccent,
+            padding: const EdgeInsets.all(18),
+          ),
+
+          child: Icon(
+            trackNotifier.isPlaying ? Icons.pause : Icons.play_arrow,
+            color: Colors.white,
+            size: 30,
+          ),
+        ),
+        const SizedBox(width: 10),
+        IconButton(
+          icon: Icon(Icons.skip_next, color: Colors.white),
+          color: Colors.white,
+          iconSize: 36,
+          onPressed: trackNotifier.playNext,
+        ),
+        const SizedBox(width: 10),
+
+        IconButton(
+          onPressed: () {
+            trackNotifier.toggleRepeatMode();
+          },
+          icon: Icon(_getRepeatIcon(trackNotifier.repeatMode)),
+
+          color:
+              trackNotifier.repeatMode == RepeatMode.off
+                  ? Colors.grey
+                  : Colors.green,
+        ),
+      ],
+    );
+  }
+
+  IconData _getRepeatIcon(RepeatMode mode) {
+    switch (mode) {
+      case RepeatMode.repeatOne:
+        return Icons.repeat_one;
+      case RepeatMode.repeatAll:
+        return Icons.repeat;
+      case RepeatMode.off:
+        return Icons.repeat;
+    }
+  }
+
+  Widget _buildMusicLyrics() {
+    return Expanded(
+      child: Container(
+        width: double.infinity,
+        padding: const EdgeInsets.all(8.0),
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(16),
+        ),
+        child: ListView(
+          children: [
+            Text(
+              'Lyrics Line 1',
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            Text(
+              "Lyrics Line 2",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+            Text(
+              "Lyrics Line 3",
+              style: TextStyle(color: Colors.white, fontSize: 16),
+            ),
+          ],
+        ),
+
+        // ScrollablePositionedList.builder(
+        //   itemScrollController: _scrollController,
+
+        //   itemCount: _lyrics.length,
+        //   itemBuilder: (context, i) {
+        //     final currentLine = (player.position.inSeconds ~/ 5).clamp(
+        //       0,
+        //       _lyrics.length,
+        //     );
+
+        //     final isActice = i == currentLine;
+
+        //     return Padding(
+        //       padding: const EdgeInsets.symmetric(vertical: 4),
+        //       child: Text(
+        //         _lyrics[i],
+        //         style: TextStyle(
+        //           color: isActice ? Colors.blueAccent : Colors.white,
+        //           fontSize: 16,
+        //         ),
+        //       ),
+        //     );
+        //   },
+        // ),
       ),
     );
   }

@@ -67,24 +67,7 @@ class _EmotionDetectionHomeScreenState
         ),
         backgroundColor: Colors.transparent,
         elevation: 0,
-        actions: [
-          IconButton(
-            style: IconButton.styleFrom(backgroundColor: Colors.tealAccent),
-
-            onPressed: () {
-              ConfirmAlertDialogue.showAlertDialogue(
-                context,
-                title: "Sign Out",
-                content: "Are you sure you want to log-out?",
-                confirmString: "Log-out",
-                onPressed: () {
-                  _signOut(context);
-                },
-              );
-            },
-            icon: Icon(Icons.logout),
-          ),
-        ],
+        actions: [_buildLogOut(context)],
       ),
 
       body: Column(
@@ -151,6 +134,25 @@ class _EmotionDetectionHomeScreenState
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildLogOut(BuildContext context) {
+    return IconButton(
+      style: IconButton.styleFrom(backgroundColor: Colors.tealAccent),
+
+      onPressed: () {
+        ConfirmAlertDialogue.showAlertDialogue(
+          context,
+          title: "Sign Out",
+          content: "Are you sure you want to log-out?",
+          confirmString: "Log-out",
+          onPressed: () {
+            _signOut(context);
+          },
+        );
+      },
+      icon: Icon(Icons.logout),
     );
   }
 
