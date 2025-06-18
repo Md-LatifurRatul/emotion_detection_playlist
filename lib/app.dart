@@ -11,9 +11,22 @@ class EmotionDetecterPlaylistApp extends StatelessWidget {
 
       title: "Emotion Playlist App",
       home: SplashScreen(),
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+        inputDecorationTheme: _inputStyleDecorationTheme(),
+      ),
+
       // home: const MainBottomNavBarScreen(),
       // home: MusicPlayerScreen(),
+    );
+  }
+
+  InputDecorationTheme _inputStyleDecorationTheme() {
+    return InputDecorationTheme(
+      filled: true,
+      fillColor: Colors.white,
+      border: OutlineInputBorder(),
     );
   }
 }

@@ -8,5 +8,5 @@ class ChatUserModel {
     lastName: 'AI',
   );
 
-  List<ChatMessage> message = <ChatMessage>[];
+  List<ChatMessage> messages = <ChatMessage>[];
 }
