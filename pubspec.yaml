@@ -48,7 +48,6 @@ dependencies:
   supabase_flutter: 
   image_picker:
   google_generative_ai:
-  flutter_gemini:
   dash_chat_2:
   speech_to_text:
   flutter_launcher_icons:

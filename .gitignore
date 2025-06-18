@@ -50,3 +50,5 @@ app.*.map.json
 /lib/firebase_options.dart
 /firebase.json
 lib/core/supabase_key.dart
+lib/core/secret_key.dart
+lib/core/ai_model.dart
