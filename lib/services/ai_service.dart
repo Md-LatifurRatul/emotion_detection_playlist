@@ -62,4 +62,10 @@ class AiService {
       return "Error processing request";
     }
   }
+
+  Stream<GenerateContentResponse> generateContentStreamChat(
+    String userMessage,
+  ) {
+    return chat.sendMessageStream(Content.text(userMessage));
+  }
 }
