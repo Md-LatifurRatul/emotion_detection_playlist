@@ -52,6 +52,7 @@ dependencies:
   speech_to_text:
   flutter_launcher_icons:
   mime:
+  flutter_tts:
 
 
 flutter_launcher_icons:
