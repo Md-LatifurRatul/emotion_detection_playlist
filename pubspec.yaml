@@ -34,18 +34,36 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  flutter_svg: ^2.0.17
-  font_awesome_flutter: ^10.8.0
-  animate_do: ^4.2.0
-  firebase_auth: ^5.5.2
-  firebase_core: ^3.13.0
-  google_sign_in: ^6.3.0
-  just_audio: ^0.10.1
-  audio_session: ^0.2.1
-  http: ^1.4.0
-  scrollable_positioned_list: ^0.3.8
-  provider: ^6.1.5
-  supabase_flutter: ^2.9.0
+  flutter_svg: 
+  font_awesome_flutter: 
+  animate_do: 
+  firebase_auth: 
+  firebase_core: 
+  google_sign_in: 
+  just_audio: 
+  audio_session: 
+  http: 
+  scrollable_positioned_list: 
+  provider: 
+  supabase_flutter: 
+  image_picker:
+  google_generative_ai:
+  flutter_gemini:
+  dash_chat_2:
+  speech_to_text:
+  flutter_launcher_icons:
+  mime:
+
+
+flutter_launcher_icons:
+  image_path: "assets/images/app_icon.png"
+  adaptive_icon_background: "#FFFFFF"
+  adaptive_icon_foreground: "assets/images/app_icon.png"
+  android: true
+  ios: true
+  remove_alpha_ios: true
+
+
 
 dev_dependencies:
   flutter_test:
@@ -66,8 +84,8 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
-  #   - assets/images/
+  assets:
+    - assets/images/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

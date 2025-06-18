@@ -16,19 +16,12 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen>
     with SingleTickerProviderStateMixin {
   Color backgroundColor = Colors.blue.shade400;
-  final List<Color> _colors = [
-    Colors.blue.shade400,
-    Colors.purple.shade700,
-    Colors.cyan.shade600,
-  ];
-
-  final int _colorIndex = 0;
 
   late AnimationController _animationController;
   late Animation<double> _iconScaleAnimation;
 
-  final authService = FirebaseAuthService();
-  StreamSubscription<User?>? _authSubscription;
+  final _authService = FirebaseAuthService();
+  // StreamSubscription<User?>? _authSubscription;
   @override
   void initState() {
     super.initState();
@@ -42,34 +35,27 @@ class _SplashScreenState extends State<SplashScreen>
       end: 1.2,
     ).animate(_animationController);
 
-    Future.delayed(Duration(seconds: 2), () {
-      setState(() {
-        backgroundColor = _colors[(_colorIndex + 1) % _colors.length];
-      });
-      _proccedToNextScreen();
-    });
+    _proccedToNextScreen();
   }
 
-  void _proccedToNextScreen() {
-    _authSubscription = authService.authStateChanges().listen((User? user) {
-      if (mounted) {
-        if (user == null) {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(builder: (context) => const LoginScreen()),
-            (route) => false,
-          );
-        } else {
-          Navigator.pushAndRemoveUntil(
-            context,
-            MaterialPageRoute(
-              builder: (context) => const MainBottomNavBarScreen(),
-            ),
-            (route) => false,
-          );
-        }
-      }
-    });
+  Future<void> _proccedToNextScreen() async {
+    await Future.delayed(const Duration(seconds: 2));
+
+    User? user = _authService.currentUser;
+
+    if (user == null) {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+        (route) => false,
+      );
+    } else {
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(builder: (context) => const MainBottomNavBarScreen()),
+        (route) => false,
+      );
+    }
   }
 
   @override
@@ -104,7 +90,6 @@ class _SplashScreenState extends State<SplashScreen>
   @override
   void dispose() {
     _animationController.dispose();
-    _authSubscription?.cancel();
     super.dispose();
   }
 }
