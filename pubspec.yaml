@@ -39,14 +39,14 @@ dependencies:
   animate_do: 
   firebase_auth: 
   firebase_core: 
-  google_sign_in: 
+  google_sign_in: ^7.1.0
   just_audio: 
   audio_session: 
   http: 
   scrollable_positioned_list: 
   provider: 
   supabase_flutter: 
-  image_picker:
+  image_picker: ^1.1.2
   google_generative_ai:
   dash_chat_2:
   speech_to_text:
