@@ -1,6 +1,5 @@
 import 'package:emotion_music_app/services/auth_exception.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 
 enum AuthAction { signIn, signUp }
 
@@ -10,7 +9,7 @@ abstract class AuthBase {
   Stream<User?> authStateChanges();
   Future<User?> signInWithEmailAndPassword(String email, String password);
   Future<User?> createUserWithEmailAndPassword(String email, String password);
-  Future<User?> signInWithGoogle();
+  // Future<User?> signInWithGoogle();
   Future<void> signOut();
 }
 
@@ -108,43 +107,34 @@ class FirebaseAuthService implements AuthBase {
     );
   }
 
-  @override
-  Future<User?> signInWithGoogle() async {
-    try {
-      final GoogleSignIn googleSignIn = GoogleSignIn();
+  // @override
+  // Future<User?> signInWithGoogle() async {
+  //   try {
+  //     final GoogleSignIn signIn = GoogleSignIn.instance;
+  //     await signIn.initialize(
+  //       clientId: '<your-client-id>',
+  //       serverClientId: '<your-server-client-id>',
+  //     );
 
-      final GoogleSignInAccount? googleUser = await googleSignIn.signIn();
-      if (googleUser == null) {
-        throw FirebaseAuthException(
-          code: "ERROR_ABORTED_BY_USER",
-          message: "Sign in aborted by user",
-        );
-      }
+  //     signIn.authenticationEvents.listen((event) async {
+  //       if (event is GoogleSignInAuthenticationEventSignIn) {
+  //         final user = event.user;
+  //         final authorization = await user.authorizationClient
+  //             .authorizationForScopes(['email']);
+  //         if (authorization != null) {
+  //           final headers = await user.authorizationClient.authorizationHeaders(
+  //             ['email'],
+  //           );
+  //         }
+  //       }
+  //     });
 
-      final GoogleSignInAuthentication googleAuth =
-          await googleUser.authentication;
-
-      if (googleAuth.accessToken == null && googleAuth.idToken == null) {
-        throw FirebaseAuthException(
-          code: 'ERROR_MISSING_GOOGLE_AUTH_TOKEN',
-          message: 'Missing Google Auth Token',
-        );
-      }
-
-      final AuthCredential credential = GoogleAuthProvider.credential(
-        idToken: googleAuth.idToken,
-        accessToken: googleAuth.accessToken,
-      );
-
-      final UserCredential userCredential = await _firebaseAuth
-          .signInWithCredential(credential);
-
-      return userCredential.user;
-    } catch (e) {
-      print(e.toString());
-      throw AuthException(message: "Google sign in failed", code: e.toString());
-    }
-  }
+  //     signIn.attemptLightweightAuthentication();
+  //   } catch (e) {
+  //     print(e.toString());
+  //     throw AuthException(message: "Google sign in failed", code: e.toString());
+  //   }
+  // }
 
   @override
   Future<void> signOut() async {

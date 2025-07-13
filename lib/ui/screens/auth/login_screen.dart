@@ -60,29 +60,29 @@ class _LoginScreenState extends State<LoginScreen> {
   }
 
   Future<void> _signInWithGoogle() async {
-    try {
-      await _firebaseAuthService.signInWithGoogle();
+    // try {
+    // await _firebaseAuthService.signInWithGoogle();
 
-      if (mounted) {
-        SnackMessage.showSnakMessage(context, "Sign in success");
+    //   if (mounted) {
+    //     SnackMessage.showSnakMessage(context, "Sign in success");
 
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-            builder: (context) => const MainBottomNavBarScreen(),
-          ),
-        );
-      }
-    } on AuthException catch (e) {
-      if (mounted) {
-        SnackMessage.showSnakMessage(
-          context,
-          "Google Sign in failed: ${e.message} ",
-        );
-      }
-    } catch (e) {
-      print("Sign in aborted: $e");
-    }
+    //     Navigator.pushReplacement(
+    //       context,
+    //       MaterialPageRoute(
+    //         builder: (context) => const MainBottomNavBarScreen(),
+    //       ),
+    //     );
+    //   }
+    // } on AuthException catch (e) {
+    //   if (mounted) {
+    //     SnackMessage.showSnakMessage(
+    //       context,
+    //       "Google Sign in failed: ${e.message} ",
+    //     );
+    //   }
+    // } catch (e) {
+    //   print("Sign in aborted: $e");
+    // }
   }
 
   @override
